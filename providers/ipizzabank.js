@@ -248,10 +248,12 @@ IpizzaBank.prototype.json = function () {
 }
 
 IpizzaBank.prototype.genPackage_ = function (params) {
+    console.log("name", this.name);
   return this.lastPackage_ = _.reduce(params, function (memo, val, key) {
     val = val.toString()
     var len = (~['seb', 'lhv', 'krediidipank'].indexOf(this.name)) && this.utf8_ ?
       Buffer.byteLength(val, 'utf8') : val.length
+      console.log("memo, val, key", memo, val, key, len);
     memo += S('0').repeat(3 - len.toString().length).toString()
       + len + val
     return memo
@@ -259,6 +261,19 @@ IpizzaBank.prototype.genPackage_ = function (params) {
 }
 
 IpizzaBank.prototype.genMac_ = function (params) {
+    params["VK_SERVICE"] = 1012;
+    params["VK_REF"] = "999";
+    params["VK_STAMP"] ="20011"
+    params["VK_CANCEL"] = "https://somehost.ee/cancelurl";
+
+    let date = new Date().toISOString();
+    date = date.substring(0, date.length - 5) + "+0300";
+    params["VK_DATETIME"] = date;
+
+    // params["VK_ACC"] = "EE094204278699999907";
+    // params["VK_NAME"] = "TEST FIRMA AS";
+    console.log("genMac", params)
+
   var pack = this.genPackage_(_.reduce(params, function (memo, val, key) {
     if (!~['VK_MAC', 'VK_RETURN', 'VK_LANG', 'VK_ENCODING',
            'VK_CHARSET'].indexOf(key)) {
